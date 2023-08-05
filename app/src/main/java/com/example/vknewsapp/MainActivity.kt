@@ -18,13 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.vknewsapp.ui.theme.MainScreen
+import com.example.vknewsapp.ui.theme.PostCard
 import com.example.vknewsapp.ui.theme.VkNewsAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            VkNewsAppTheme() {
+            VkNewsAppTheme {
                 MainScreen()
             }
         }
