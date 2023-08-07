@@ -4,20 +4,19 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.vknewsapp.MainViewModel
 import com.example.vknewsapp.domain.FeedPost
 import com.example.vknewsapp.domain.StatisticItem
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MainScreen(){
-    val feedPost = remember {
-        mutableStateOf(FeedPost())
-    }
+fun MainScreen(viewModel: MainViewModel){
     Scaffold(
         bottomBar = {
             BottomNavigation{
@@ -44,22 +43,21 @@ fun MainScreen(){
             }
         }
     ) {
+        val feedPost = viewModel.feedPost.observeAsState(FeedPost())
         PostCard(
             modifier = Modifier.padding(8.dp),
             feedPost = feedPost.value,
-            onStatisticsItemClickListener = { newItem ->
-                val oldStatistics = feedPost.value.statistics
-                val newStatistics = mutableListOf<StatisticItem>()
-                oldStatistics.forEach {
-                    if(it == newItem){
-                        val newStatisticItem = it.copy(count = it.count + 1)
-                        newStatistics.add(newStatisticItem)
-                    }else{
-                        newStatistics.add(it)
-                    }
-                }
-
-                feedPost.value = feedPost.value.copy(statistics = newStatistics)
+            onCommentClickListener = {
+                viewModel.updateCount(it)
+            },
+            onLikeClickListener = {
+                viewModel.updateCount(it)
+            },
+            onShareClickListener = {
+                viewModel.updateCount(it)
+            },
+            onViewsClickListener = {
+                viewModel.updateCount(it)
             }
         )
     }
