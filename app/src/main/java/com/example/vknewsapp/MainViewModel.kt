@@ -8,12 +8,21 @@ import com.example.vknewsapp.domain.StatisticItem
 
 class MainViewModel: ViewModel() {
 
-    private val _feedPost = MutableLiveData(FeedPost())
-    val feedPost: LiveData<FeedPost>
-        get() = _feedPost
+    private val sourceList = mutableListOf<FeedPost>().apply {
+        repeat(10){
+            add(FeedPost(id = it))
+        }
+    }
 
-    fun updateCount(item: StatisticItem){
-        val oldStatistics = feedPost.value?.statistics ?: throw java.lang.IllegalStateException()
+    private val _feedPosts = MutableLiveData<List<FeedPost>>(sourceList)
+    val feedPosts: LiveData<List<FeedPost>>
+        get() = _feedPosts
+
+
+
+    fun updateCount(feedPost: FeedPost, item: StatisticItem){
+        val oldPosts = feedPosts.value?.toMutableList() ?: mutableListOf()
+        val oldStatistics = feedPost.statistics
         val newStatistics = mutableListOf<StatisticItem>()
         oldStatistics.forEach {
             if(it.type == item.type){
@@ -23,7 +32,22 @@ class MainViewModel: ViewModel() {
                 newStatistics.add(it)
             }
         }
-        _feedPost.value = feedPost.value?.copy(statistics = newStatistics)
+        val newFeedPost = feedPost.copy(statistics = newStatistics)
+        _feedPosts.value = oldPosts.apply {
+            replaceAll {
+                if(it.id == newFeedPost.id){
+                    newFeedPost
+                }else{
+                    it
+                }
+            }
+        }
+    }
+
+    fun remove(feedPost: FeedPost){
+        val oldPosts = feedPosts.value?.toMutableList() ?: mutableListOf()
+        oldPosts.remove(feedPost)
+        _feedPosts.value = oldPosts
     }
 
 }
