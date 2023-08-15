@@ -3,28 +3,28 @@ package com.example.vknewsapp.ui.theme
 import androidx.compose.foundation.clickable
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import com.example.vknewsapp.MainViewModel
+import com.example.vknewsapp.domain.FeedPost
 import com.example.vknewsapp.navigation.AppNavGraph
-import com.example.vknewsapp.navigation.NavigationState
 import com.example.vknewsapp.navigation.Screen
 import com.example.vknewsapp.navigation.rememberNavigationState
 
 
 @Composable
-fun MainScreen(viewModel: MainViewModel){
+fun MainScreen(){
     val navigationState = rememberNavigationState()
+    val commentsToPost: MutableState<FeedPost?> = remember {
+        mutableStateOf(null)
+    }
     Scaffold(
         bottomBar = {
-            BottomNavigation{
+            BottomNavigation {
                 val navBackStackEntry by navigationState.navHostController.currentBackStackEntryAsState()
-                val currentRoute = navBackStackEntry?.destination?.route
 
                 val items = listOf(
                     NavigationItem.Home,
@@ -32,10 +32,15 @@ fun MainScreen(viewModel: MainViewModel){
                     NavigationItem.Profile
                 )
                 items.forEach { item ->
+                    val selected = navBackStackEntry?.destination?.hierarchy?.any {
+                        it.route == item.screen.route
+                    } ?: false
                     BottomNavigationItem(
-                        selected = currentRoute == item.screen.route,
+                        selected = selected,
                         onClick = {
-                                  navigationState.navigateTo(item.screen.route)
+                            if (!selected) {
+                                navigationState.navigateTo(item.screen.route)
+                            }
                         },
                         icon = { Icon(item.icon, contentDescription = null) },
                         label = {
@@ -47,12 +52,28 @@ fun MainScreen(viewModel: MainViewModel){
                 }
             }
         }
-    ) {paddingValues ->
+    ) { paddingValues ->
         AppNavGraph(
             navHostController = navigationState.navHostController,
-            homeScreenContent = { HomeScreen(viewModel = viewModel, paddingValues = paddingValues) },
+            newsFeedScreenContent = {
+                HomeScreen(
+                    paddingValues = paddingValues,
+                    onCommentClickListener = {
+                        commentsToPost.value = it
+                        navigationState.navigateToComments()
+                    }
+                )
+            },
+            commentsScreenContent = {
+                CommentsScreen(
+                    onBackPressed = {
+                        navigationState.navHostController.popBackStack()
+                    },
+                    feedPost = commentsToPost.value!!
+                )
+            },
             favouriteScreenContent = { TextCounter(name = "Favourite") },
-            profileScreenContent = {TextCounter(name = "Profile") }
+            profileScreenContent = { TextCounter(name = "Profile") }
         )
     }
 }
