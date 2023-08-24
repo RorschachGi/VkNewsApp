@@ -9,7 +9,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.simulateHotReload
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,7 +34,7 @@ fun CommentsScreen(
             topBar = {
                 TopAppBar(
                     title = {
-                        Text(text = "Comments for FeedPost Id: ${currentState.feedPost.id}")
+                        Text(text = "Comments for FeedPost Id: ${currentState.feedPost.contentText}")
                     },
                     navigationIcon = {
                         IconButton(onClick = { onBackPressed() }) {
