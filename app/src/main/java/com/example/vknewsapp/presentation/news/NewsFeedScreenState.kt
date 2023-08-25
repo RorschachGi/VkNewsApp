@@ -1,4 +1,4 @@
-package com.example.vknewsapp.ui.theme
+package com.example.vknewsapp.presentation.news
 
 import com.example.vknewsapp.domain.FeedPost
 
