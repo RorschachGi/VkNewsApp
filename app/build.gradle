@@ -61,6 +61,9 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10'
     implementation 'com.vk:android-sdk-core:4.0.1'
     implementation 'com.vk:android-sdk-api:4.0.1'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.3'
+    implementation 'io.coil-kt:coil-compose:2.1.0'
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
