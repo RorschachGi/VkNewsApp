@@ -1,6 +1,5 @@
 package com.example.vknewsapp.presentation.news
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -59,7 +58,7 @@ fun PostCard(
                 onViewsClickListener = onViewsClickListener,
                 onShareClickListener = onShareClickListener,
                 onCommentClickListener = onCommentClickListener,
-                isFavourite = feedPost.isFavourite
+                isFavourite = feedPost.isLiked
             )
         }
     }
