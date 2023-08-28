@@ -2,12 +2,10 @@ package com.example.vknewsapp.presentation.news
 
 import android.app.Application
 import androidx.lifecycle.*
-import com.example.vknewsapp.data.model.mapper.NewsFeedMapper
-import com.example.vknewsapp.data.network.ApiFactory
+import com.example.vknewsapp.data.repository.NewsFeedRepository
 import com.example.vknewsapp.domain.FeedPost
 import com.example.vknewsapp.domain.StatisticItem
-import com.vk.api.sdk.VKPreferencesKeyValueStorage
-import com.vk.api.sdk.auth.VKAccessToken
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class NewsFeedViewModel(application: Application): AndroidViewModel(application) {
@@ -18,7 +16,7 @@ class NewsFeedViewModel(application: Application): AndroidViewModel(application)
     val screenState: LiveData<NewsFeedScreenState>
         get() = _screenState
 
-    private val mapper = NewsFeedMapper()
+    private val repository = NewsFeedRepository(application)
 
     init{
         loadRecommendations()
@@ -26,11 +24,23 @@ class NewsFeedViewModel(application: Application): AndroidViewModel(application)
 
     private fun loadRecommendations(){
         viewModelScope.launch {
-            val storage = VKPreferencesKeyValueStorage(getApplication())
-            val token = VKAccessToken.restore(storage) ?: return@launch
-            val response = ApiFactory.apiService.loadRecommendations(token.accessToken)
-            val feedPosts = mapper.mapResponseToPosts(response)
+            val feedPosts = repository.loadRecommendations()
             _screenState.value = NewsFeedScreenState.Posts(posts = feedPosts)
+        }
+    }
+
+    fun loadNextRecommendation(){
+        _screenState.value = NewsFeedScreenState.Posts(
+            posts = repository.feedPosts,
+            nextDataIsLoading = true
+        )
+        loadRecommendations()
+    }
+
+    fun changeLikeStatus(feedPost: FeedPost){
+        viewModelScope.launch {
+            repository.changeLikeStatus(feedPost)
+            _screenState.value = NewsFeedScreenState.Posts(posts = repository.feedPosts)
         }
     }
 
