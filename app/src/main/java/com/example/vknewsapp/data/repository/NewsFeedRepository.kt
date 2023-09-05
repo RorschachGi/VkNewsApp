@@ -1,14 +1,15 @@
 package com.example.vknewsapp.data.repository
 
 import android.app.Application
+import android.util.Log
 import com.example.vknewsapp.data.model.mapper.NewsFeedMapper
 import com.example.vknewsapp.data.network.ApiFactory
-import com.example.vknewsapp.data.network.ApiFactory.apiService
 import com.example.vknewsapp.domain.FeedPost
 import com.example.vknewsapp.domain.StatisticItem
 import com.example.vknewsapp.domain.StatisticType
 import com.vk.api.sdk.VKPreferencesKeyValueStorage
 import com.vk.api.sdk.auth.VKAccessToken
+import com.vk.api.sdk.ui.VKConfirmationActivity.Companion.result
 
 class NewsFeedRepository(application: Application) {
 
@@ -38,6 +39,18 @@ class NewsFeedRepository(application: Application) {
         val posts = mapper.mapResponseToPosts(response)
         _feedPosts.addAll(posts)
         return feedPosts
+    }
+
+    suspend fun deletePost(feedPost: FeedPost){
+        apiService.deletePost(
+            token = getAccessToken(),
+            typeItem = "wall",
+            ownerId = feedPost.communityId,
+            postId = feedPost.id
+        )
+        val postIndex = _feedPosts.indexOf(feedPost)
+        _feedPosts.removeAt(postIndex)
+        Log.d("NewsFeedRepository", "Result delete: $result")
     }
 
     private fun getAccessToken(): String{
