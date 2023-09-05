@@ -34,6 +34,16 @@ fun NewsFeedScreen(
                 nextDataIsLoading = currentState.nextDataIsLoading
             )
         }
+        is NewsFeedScreenState.Loading ->{
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                    CircularProgressIndicator(color = DarkBlue)
+            }
+        }
+
         NewsFeedScreenState.Initial -> {}
     }
 }
@@ -78,12 +88,6 @@ private fun FeedPosts(
                     },
                     onLikeClickListener = { _ ->
                         viewModel.changeLikeStatus(feedPost)
-                    },
-                    onShareClickListener = { statisticItem ->
-                        viewModel.updateCount(feedPost, statisticItem)
-                    },
-                    onViewsClickListener = { statisticItem ->
-                        viewModel.updateCount(feedPost, statisticItem)
                     }
                 )
             }
