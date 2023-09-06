@@ -4,7 +4,9 @@ import android.app.Application
 import android.util.Log
 import com.example.vknewsapp.data.model.mapper.NewsFeedMapper
 import com.example.vknewsapp.data.network.ApiFactory
+import com.example.vknewsapp.data.network.ApiService
 import com.example.vknewsapp.domain.FeedPost
+import com.example.vknewsapp.domain.PostComment
 import com.example.vknewsapp.domain.StatisticItem
 import com.example.vknewsapp.domain.StatisticType
 import com.vk.api.sdk.VKPreferencesKeyValueStorage
@@ -51,6 +53,15 @@ class NewsFeedRepository(application: Application) {
         val postIndex = _feedPosts.indexOf(feedPost)
         _feedPosts.removeAt(postIndex)
         Log.d("NewsFeedRepository", "Result delete: $result")
+    }
+
+    suspend fun getComments(feedPost: FeedPost): List<PostComment>{
+        val comments = apiService.getComments(
+            token = getAccessToken(),
+            ownerId = feedPost.communityId,
+            postId = feedPost.id
+        )
+        return mapper.mapResponseToComments(comments)
     }
 
     private fun getAccessToken(): String{
