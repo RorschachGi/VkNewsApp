@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,7 +23,7 @@ fun NewsFeedScreen(
     onCommentClickListener: (FeedPost) -> Unit
 ){
     val viewModel: NewsFeedViewModel = viewModel()
-    val stateScreen = viewModel.screenState.observeAsState(NewsFeedScreenState.Initial)
+    val stateScreen = viewModel.screenState.collectAsState(NewsFeedScreenState.Initial)
 
     when(val currentState = stateScreen.value){
         is NewsFeedScreenState.Posts ->{
