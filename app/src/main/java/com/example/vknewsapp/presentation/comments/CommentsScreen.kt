@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.vknewsapp.R
-import com.example.vknewsapp.domain.FeedPost
-import com.example.vknewsapp.domain.PostComment
+import com.example.vknewsapp.domain.entity.FeedPost
+import com.example.vknewsapp.domain.entity.PostComment
 import com.example.vknewsapp.ui.theme.DarkBlue
 
 @Composable

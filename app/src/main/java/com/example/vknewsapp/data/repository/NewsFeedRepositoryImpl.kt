@@ -3,9 +3,9 @@ package com.example.vknewsapp.data.repository
 import android.app.Application
 import com.example.vknewsapp.data.model.mapper.NewsFeedMapper
 import com.example.vknewsapp.data.network.ApiFactory
-import com.example.vknewsapp.domain.*
+import com.example.vknewsapp.domain.entity.*
+import com.example.vknewsapp.domain.repository.NewsFeedRepository
 import com.example.vknewsapp.extensions.mergeWith
-import com.example.vknewsapp.domain.AuthState
 import com.vk.api.sdk.VKPreferencesKeyValueStorage
 import com.vk.api.sdk.auth.VKAccessToken
 import kotlinx.coroutines.CoroutineScope
@@ -13,7 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 
-class NewsFeedRepository(application: Application) {
+class NewsFeedRepositoryImpl(application: Application): NewsFeedRepository {
 
     private val storage = VKPreferencesKeyValueStorage(application)
     private val token
@@ -58,7 +58,7 @@ class NewsFeedRepository(application: Application) {
 
     private val checkAuthStateEvents = MutableSharedFlow<Unit>(replay = 1)
 
-    val authStateFlow = flow{
+    private val authStateFlow = flow{
         checkAuthStateEvents.emit(Unit)
         checkAuthStateEvents.collect{
             val currentToken = token
@@ -72,7 +72,7 @@ class NewsFeedRepository(application: Application) {
         initialValue = AuthState.Initial
     )
 
-    val recommendations: StateFlow<List<FeedPost>> = loadedListFlow
+    private val recommendations: StateFlow<List<FeedPost>> = loadedListFlow
         .mergeWith(refreshedListFlow)
         .stateIn(
         scope = coroutineScope,
@@ -80,15 +80,23 @@ class NewsFeedRepository(application: Application) {
         initialValue = feedPosts
     )
 
-    suspend fun checkAuthState(){
+    override fun getAuthStateFlow(): StateFlow<AuthState> {
+        return authStateFlow
+    }
+
+    override fun getRecommendations(): StateFlow<List<FeedPost>> {
+        return recommendations
+    }
+
+    override suspend fun checkAuthState(){
         checkAuthStateEvents.emit(Unit)
     }
 
-    suspend fun loadNextData(){
+    override suspend fun loadNextData(){
         nextDataNeededEvents.emit(Unit)
     }
 
-    suspend fun deletePost(feedPost: FeedPost){
+    override suspend fun deletePost(feedPost: FeedPost){
         apiService.deletePost(
             token = getAccessToken(),
             typeItem = "wall",
@@ -100,7 +108,7 @@ class NewsFeedRepository(application: Application) {
         refreshedListFlow.emit(feedPosts)
     }
 
-    fun getComments(feedPost: FeedPost): Flow<List<PostComment>> = flow{
+    override fun getComments(feedPost: FeedPost): Flow<List<PostComment>> = flow{
         val comments = apiService.getComments(
             token = getAccessToken(),
             ownerId = feedPost.communityId,
@@ -116,7 +124,7 @@ class NewsFeedRepository(application: Application) {
         return token?.accessToken ?: throw IllegalStateException("Token is null")
     }
 
-    suspend fun changeLikeStatus(feedPost: FeedPost){
+    override suspend fun changeLikeStatus(feedPost: FeedPost){
         val response = if(feedPost.isLiked) {
             apiService.deleteLike(
                 token = getAccessToken(),

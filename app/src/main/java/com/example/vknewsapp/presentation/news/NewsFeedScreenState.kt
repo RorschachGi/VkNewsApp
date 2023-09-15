@@ -1,6 +1,6 @@
 package com.example.vknewsapp.presentation.news
 
-import com.example.vknewsapp.domain.FeedPost
+import com.example.vknewsapp.domain.entity.FeedPost
 
 sealed class NewsFeedScreenState {
 

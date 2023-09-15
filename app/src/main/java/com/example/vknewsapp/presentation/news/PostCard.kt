@@ -19,9 +19,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.vknewsapp.R
-import com.example.vknewsapp.domain.FeedPost
-import com.example.vknewsapp.domain.StatisticItem
-import com.example.vknewsapp.domain.StatisticType
+import com.example.vknewsapp.domain.entity.FeedPost
+import com.example.vknewsapp.domain.entity.StatisticItem
+import com.example.vknewsapp.domain.entity.StatisticType
 import com.example.vknewsapp.ui.theme.DarkRed
 
 @Composable
@@ -154,7 +154,7 @@ private fun formatStatisticCount(count: Int): String{
     }
 }
 
-private fun List<StatisticItem>.getItemByType(type: StatisticType): StatisticItem{
+private fun List<StatisticItem>.getItemByType(type: StatisticType): StatisticItem {
     return this.find{it.type == type} ?: throw java.lang.IllegalStateException()
 }
 

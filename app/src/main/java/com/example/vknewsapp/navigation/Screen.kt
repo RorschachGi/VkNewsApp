@@ -1,7 +1,7 @@
 package com.example.vknewsapp.navigation
 
 import android.net.Uri
-import com.example.vknewsapp.domain.FeedPost
+import com.example.vknewsapp.domain.entity.FeedPost
 import com.google.gson.Gson
 
 
